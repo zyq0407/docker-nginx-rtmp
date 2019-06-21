@@ -48,6 +48,8 @@ RUN cd /tmp/nginx-${NGINX_VERSION} && \
   --with-threads \
   --with-file-aio \
   --with-http_ssl_module \
+  --with-http_secure_link_module \
+  --with-http_auth_request_module \
   --error-log-path=/opt/nginx/logs/error.log \
   --http-log-path=/opt/nginx/logs/access.log \
   --with-debug && \
