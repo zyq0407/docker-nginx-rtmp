@@ -152,7 +152,9 @@ RUN apk add --update \
   rtmpdump \
   x264-dev \
   x265-dev \
-  gettext
+  gettext \ 
+  fcgiwrap \
+  spawn-fcgi
 
 COPY --from=build-nginx /usr/local/nginx /usr/local/nginx
 COPY --from=build-ffmpeg /usr/local /usr/local
