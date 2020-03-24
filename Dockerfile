@@ -1,11 +1,11 @@
-ARG NGINX_VERSION=1.14.2
+ARG NGINX_VERSION=1.16.1
 ARG NGINX_RTMP_VERSION=1.2.1
-ARG FFMPEG_VERSION=4.1
+ARG FFMPEG_VERSION=4.2.2
 
 
 ##############################
 # Build the NGINX-build image.
-FROM alpine:3.8 as build-nginx
+FROM alpine:3.11 as build-nginx
 ARG NGINX_VERSION
 ARG NGINX_RTMP_VERSION
 
@@ -42,9 +42,9 @@ RUN cd /tmp && \
 # Compile nginx with nginx-rtmp module.
 RUN cd /tmp/nginx-${NGINX_VERSION} && \
   ./configure \
-  --prefix=/opt/nginx \
+  --prefix=/usr/local/nginx \
   --add-module=/tmp/nginx-rtmp-module-${NGINX_RTMP_VERSION} \
-  --conf-path=/opt/nginx/nginx.conf \
+  --conf-path=/etc/nginx/nginx.conf \
   --with-threads \
   --with-file-aio \
   --with-http_ssl_module \
@@ -52,12 +52,13 @@ RUN cd /tmp/nginx-${NGINX_VERSION} && \
   --with-http_auth_request_module \
   --error-log-path=/opt/nginx/logs/error.log \
   --http-log-path=/opt/nginx/logs/access.log \
-  --with-debug && \
+  --with-debug \
+  --with-cc-opt="-Wimplicit-fallthrough=0" && \
   cd /tmp/nginx-${NGINX_VERSION} && make && make install
 
 ###############################
 # Build the FFmpeg-build image.
-FROM alpine:3.8 as build-ffmpeg
+FROM alpine:3.11 as build-ffmpeg
 ARG FFMPEG_VERSION
 ARG PREFIX=/usr/local
 ARG MAKEFLAGS="-j4"
@@ -65,6 +66,7 @@ ARG MAKEFLAGS="-j4"
 # FFmpeg build dependencies.
 RUN apk add --update \
   build-base \
+  coreutils \
   freetype-dev \
   lame-dev \
   libogg-dev \
@@ -74,6 +76,7 @@ RUN apk add --update \
   libvorbis-dev \
   libwebp-dev \
   libtheora-dev \
+  openssl-dev \
   opus-dev \
   pkgconf \
   pkgconfig \
@@ -83,7 +86,7 @@ RUN apk add --update \
   x265-dev \
   yasm
 
-RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories
 RUN apk add --update fdk-aac-dev
 
 # Get FFmpeg source.
@@ -109,7 +112,6 @@ RUN cd /tmp/ffmpeg-${FFMPEG_VERSION} && \
   --enable-libfdk-aac \
   --enable-libass \
   --enable-libwebp \
-  --enable-librtmp \
   --enable-postproc \
   --enable-avresample \
   --enable-libfreetype \
@@ -125,15 +127,22 @@ RUN rm -rf /var/cache/* /tmp/*
 
 ##########################
 # Build the release image.
-FROM alpine:3.8
+FROM alpine:3.11
 LABEL MAINTAINER Alfred Gutierrez <alf.g.jr@gmail.com>
+
+# Set default ports.
+ENV HTTP_PORT 80
+ENV HTTPS_PORT 443
+ENV RTMP_PORT 1935
 
 RUN apk add --update \
   ca-certificates \
+  gettext \
   openssl \
   pcre \
   lame \
   libogg \
+  curl \
   libass \
   libvpx \
   libvorbis \
@@ -145,16 +154,19 @@ RUN apk add --update \
   x265-dev \
   gettext
 
-COPY --from=build-nginx /opt/nginx /opt/nginx
+COPY --from=build-nginx /usr/local/nginx /usr/local/nginx
 COPY --from=build-ffmpeg /usr/local /usr/local
 COPY --from=build-ffmpeg /usr/lib/libfdk-aac.so.2 /usr/lib/libfdk-aac.so.2
 
-# Add NGINX config and static files.
-ADD nginx.conf /opt/nginx/nginx.conf
+# Add NGINX path, config and static files.
+ENV PATH "${PATH}:/usr/local/nginx/sbin"
+ADD nginx.conf /etc/nginx/nginx.conf.template
 RUN mkdir -p /opt/data && mkdir /www
 ADD static /www/static
 
 EXPOSE 1935
 EXPOSE 80
 
-CMD ["/opt/nginx/sbin/nginx"]
+CMD envsubst "$(env | sed -e 's/=.*//' -e 's/^/\$/g')" < \
+  /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && \
+  nginx
