@@ -50,8 +50,6 @@ RUN cd /tmp/nginx-${NGINX_VERSION} && \
   --with-http_ssl_module \
   --with-http_secure_link_module \
   --with-http_auth_request_module \
-  --error-log-path=/opt/nginx/logs/error.log \
-  --http-log-path=/opt/nginx/logs/access.log \
   --with-debug \
   --with-cc-opt="-Wimplicit-fallthrough=0" && \
   cd /tmp/nginx-${NGINX_VERSION} && make && make install
