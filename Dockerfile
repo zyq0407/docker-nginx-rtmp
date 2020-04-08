@@ -42,7 +42,7 @@ RUN cd /tmp && \
 # Get nginx-http-flv module.
 RUN cd /tmp && \
   wget https://github.com/winshining/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
-  tar zxf v${NGINX_HTTP_FLV_VERSION}.tar.gz && rm nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION}.tar.gz
+  tar zxf v${NGINX_HTTP_FLV_VERSION}.tar.gz && rm v${NGINX_HTTP_FLV_VERSION}.tar.gz
 
 # Compile nginx with nginx-rtmp module.
 RUN cd /tmp/nginx-${NGINX_VERSION} && \
