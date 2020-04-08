@@ -1,5 +1,5 @@
-ARG NGINX_VERSION=1.16.1
-ARG NGINX_RTMP_VERSION=1.2.1
+ARG NGINX_VERSION=1.17.9
+ARG NGINX_HTTP_FLV_VERSION=1.2.7
 ARG FFMPEG_VERSION=4.2.2
 
 
@@ -7,7 +7,7 @@ ARG FFMPEG_VERSION=4.2.2
 # Build the NGINX-build image.
 FROM alpine:3.11 as build-nginx
 ARG NGINX_VERSION
-ARG NGINX_RTMP_VERSION
+ARG NGINX_HTTP_FLV_VERSION
 
 # Build dependencies.
 RUN apk add --update \
@@ -35,21 +35,27 @@ RUN cd /tmp && \
   rm nginx-${NGINX_VERSION}.tar.gz
 
 # Get nginx-rtmp module.
+# RUN cd /tmp && \
+#   wget https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_VERSION}.tar.gz && \
+#   tar zxf v${NGINX_RTMP_VERSION}.tar.gz && rm v${NGINX_RTMP_VERSION}.tar.gz
+
+# Get nginx-http-flv module.
 RUN cd /tmp && \
-  wget https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_VERSION}.tar.gz && \
-  tar zxf v${NGINX_RTMP_VERSION}.tar.gz && rm v${NGINX_RTMP_VERSION}.tar.gz
+  wget https://github.com/winshining/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
+  tar zxf nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION}.tar.gz && rm nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION}.tar.gz
 
 # Compile nginx with nginx-rtmp module.
 RUN cd /tmp/nginx-${NGINX_VERSION} && \
   ./configure \
   --prefix=/usr/local/nginx \
-  --add-module=/tmp/nginx-rtmp-module-${NGINX_RTMP_VERSION} \
+  --add-module=/tmp/nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION} \
   --conf-path=/etc/nginx/nginx.conf \
   --with-threads \
   --with-file-aio \
   --with-http_ssl_module \
   --with-http_secure_link_module \
   --with-http_auth_request_module \
+  --with-http_stub_status_module \
   --with-debug \
   --with-cc-opt="-Wimplicit-fallthrough=0" && \
   cd /tmp/nginx-${NGINX_VERSION} && make && make install
