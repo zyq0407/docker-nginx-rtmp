@@ -1,4 +1,4 @@
-ARG NGINX_VERSION=1.17.9
+ARG NGINX_VERSION=1.16.1
 ARG NGINX_HTTP_FLV_VERSION=1.2.7
 ARG FFMPEG_VERSION=4.2.2
 
@@ -44,18 +44,23 @@ RUN cd /tmp && \
   wget https://github.com/winshining/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
   tar zxf v${NGINX_HTTP_FLV_VERSION}.tar.gz && rm v${NGINX_HTTP_FLV_VERSION}.tar.gz
 
+RUN cd /tmp && \
+  wget https://github.com/zls0424/ngx_req_status/archive/master.zip -O ngx_req_status.zip && \
+  unzip ngx_req_status.zip
+
 # Compile nginx with nginx-rtmp module.
 RUN cd /tmp/nginx-${NGINX_VERSION} && \
+  patch -p1 < /tmp/ngx_req_status-master/write_filter.patch && \
   ./configure \
   --prefix=/usr/local/nginx \
   --add-module=/tmp/nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION} \
+  --add-module=/tmp/ngx_req_status-master \
   --conf-path=/etc/nginx/nginx.conf \
   --with-threads \
   --with-file-aio \
   --with-http_ssl_module \
   --with-http_secure_link_module \
   --with-http_auth_request_module \
-  --with-http_stub_status_module \
   --with-debug \
   --with-cc-opt="-Wimplicit-fallthrough=0" && \
   cd /tmp/nginx-${NGINX_VERSION} && make && make install
