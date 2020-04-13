@@ -60,7 +60,6 @@ RUN cd /tmp && \
 
 # Compile nginx with nginx-rtmp module.
 RUN cd /tmp/nginx-${NGINX_VERSION} && \
-  patch -p1 < /tmp/ngx_req_status-master/write_filter-1.7.11.patch && \
   ./configure \
   --prefix=/usr/local/nginx \
   --add-module=/tmp/nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION} \
