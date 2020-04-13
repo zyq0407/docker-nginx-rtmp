@@ -1,5 +1,6 @@
-ARG NGINX_VERSION=1.9.1
+ARG NGINX_VERSION=1.16.1
 ARG NGINX_HTTP_FLV_VERSION=1.2.7
+ARG NGINX_HTTP_ACCOUNTING_VERSION=2.0
 ARG FFMPEG_VERSION=4.2.2
 
 
@@ -44,9 +45,15 @@ RUN cd /tmp && \
   wget https://github.com/winshining/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
   tar zxf v${NGINX_HTTP_FLV_VERSION}.tar.gz && rm v${NGINX_HTTP_FLV_VERSION}.tar.gz
 
+# Get echo-nginx-module
 RUN cd /tmp && \
-  wget https://github.com/zls0424/ngx_req_status/archive/master.zip -O ngx_req_status.zip && \
-  unzip ngx_req_status.zip
+  wget https://github.com/openresty/echo-nginx-module/archive/master.tar.gz -O echo-nginx-module.zip && \
+  unzip echo-nginx-module.zip && rm echo-nginx-module.zip
+
+# Get traffic-accounting-nginx-module
+RUN cd /tmp && \
+  wget https://github.com/Lax/traffic-accounting-nginx-module/archive/v${NGINX_HTTP_ACCOUNTING_VERSION}.tar.gz && \
+  tar zxf v${NGINX_HTTP_ACCOUNTING_VERSION}.tar.gz && rm v${NGINX_HTTP_ACCOUNTING_VERSION}.tar.gz
 
 # Compile nginx with nginx-rtmp module.
 RUN cd /tmp/nginx-${NGINX_VERSION} && \
@@ -54,7 +61,8 @@ RUN cd /tmp/nginx-${NGINX_VERSION} && \
   ./configure \
   --prefix=/usr/local/nginx \
   --add-module=/tmp/nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION} \
-  --add-module=/tmp/ngx_req_status-master \
+  --add-module=/tmp/echo-nginx-module-master \
+  --add-module=/tmp/traffic-accounting-nginx-module-${NGINX_HTTP_ACCOUNTING_VERSION} \
   --conf-path=/etc/nginx/nginx.conf \
   --with-threads \
   --with-file-aio \
