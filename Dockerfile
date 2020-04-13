@@ -1,6 +1,7 @@
 ARG NGINX_VERSION=1.16.1
 ARG NGINX_HTTP_FLV_VERSION=1.2.7
 ARG NGINX_HTTP_ACCOUNTING_VERSION=2.0
+ARG NGINX_ECHO_VERSION=0.62rc1
 ARG FFMPEG_VERSION=4.2.2
 
 
@@ -47,8 +48,8 @@ RUN cd /tmp && \
 
 # Get echo-nginx-module
 RUN cd /tmp && \
-  wget https://github.com/openresty/echo-nginx-module/archive/master.tar.gz -O echo-nginx-module.zip && \
-  unzip echo-nginx-module.zip && rm echo-nginx-module.zip
+  wget https://github.com/openresty/echo-nginx-module/archive/v${NGINX_ECHO_VERSION}.tar.gz && \
+  tar zxf v${NGINX_ECHO_VERSION}.tar.gz && rm v${NGINX_ECHO_VERSION}.tar.gz
 
 # Get traffic-accounting-nginx-module
 RUN cd /tmp && \
@@ -61,7 +62,7 @@ RUN cd /tmp/nginx-${NGINX_VERSION} && \
   ./configure \
   --prefix=/usr/local/nginx \
   --add-module=/tmp/nginx-http-flv-module-${NGINX_HTTP_FLV_VERSION} \
-  --add-module=/tmp/echo-nginx-module-master \
+  --add-module=/tmp/echo-nginx-module-${NGINX_ECHO_VERSION} \
   --add-module=/tmp/traffic-accounting-nginx-module-${NGINX_HTTP_ACCOUNTING_VERSION} \
   --conf-path=/etc/nginx/nginx.conf \
   --with-threads \
