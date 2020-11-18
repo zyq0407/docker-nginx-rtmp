@@ -13,6 +13,6 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build . --file Dockerfile --tag nginx-rtmp:latest
-        docker tag nginx-rtmp ifreecomm/nginx-rtmp:http-flv
+        docker tag nginx-rtmp ifreecomm/nginx-rtmp:http-flv-bash
         docker login -u kangliqi -p ${{ secrets.DOCKERHUB_TOKEN }}
-        docker push ifreecomm/nginx-rtmp:http-flv
+        docker push ifreecomm/nginx-rtmp:http-flv-bash
