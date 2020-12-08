@@ -1,5 +1,5 @@
 ARG NGINX_VERSION=1.16.1
-ARG NGINX_HTTP_FLV_VERSION=1.2.7
+ARG NGINX_HTTP_FLV_VERSION=1.2.8-custom
 ARG NGINX_HTTP_ACCOUNTING_VERSION=2.0
 ARG NGINX_ECHO_VERSION=0.62rc1
 ARG FFMPEG_VERSION=4.2.2
@@ -45,7 +45,7 @@ RUN cd /tmp && \
 
 # Get nginx-http-flv module.
 RUN cd /tmp && \
-  wget https://github.com/winshining/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
+  wget https://github.com/kangliqi/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
   tar zxf v${NGINX_HTTP_FLV_VERSION}.tar.gz && rm v${NGINX_HTTP_FLV_VERSION}.tar.gz
 
 # Get echo-nginx-module
