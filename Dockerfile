@@ -45,7 +45,7 @@ RUN cd /tmp && \
 
 # Get nginx-http-flv module.
 RUN cd /tmp && \
-  wget https://github.com/kangliqi/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
+  wget https://github.com/zyq0407/nginx-http-flv-module/archive/v${NGINX_HTTP_FLV_VERSION}.tar.gz && \
   tar zxf v${NGINX_HTTP_FLV_VERSION}.tar.gz && rm v${NGINX_HTTP_FLV_VERSION}.tar.gz
 
 # Get echo-nginx-module
