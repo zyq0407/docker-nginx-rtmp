@@ -19,4 +19,4 @@ jobs:
         docker build . --file Dockerfile --tag nginx-rtmp:latest
         docker tag nginx-rtmp zyq0407/nginx-rtmp:http2_flv
         docker login -u zyq0407 -p ${{ secrets.DOCKERHUB_TOKEN }}
-        docker push ifreecomm/nginx-rtmp:http-flv-custom
+        docker push zyq0407/nginx-rtmp:http2_flv
