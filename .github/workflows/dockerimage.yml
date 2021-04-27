@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on: 
   push: 
-    branches: [master]
+    branches: [flv_http2]
   pull_request:
-    branches: [master]
+    branches: [flv_http2]
 
 jobs:
 
@@ -17,6 +17,6 @@ jobs:
     - name: Build the Docker image
       run: |
         docker build . --file Dockerfile --tag nginx-rtmp:latest
-        docker tag nginx-rtmp ifreecomm/nginx-rtmp:http-flv-custom
+        docker tag nginx-rtmp zyq0407/nginx-rtmp:http2_flv
         docker login -u zyq0407 -p ${{ secrets.DOCKERHUB_TOKEN }}
         docker push ifreecomm/nginx-rtmp:http-flv-custom
