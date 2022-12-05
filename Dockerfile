@@ -1,5 +1,5 @@
 ARG NGINX_VERSION=1.23.1
-ARG NGINX_RTMP_VERSION=1.2.2
+ARG NGINX_RTMP_VERSION=1.2.10
 ARG FFMPEG_VERSION=5.1
 
 ##############################
@@ -36,7 +36,7 @@ RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
   rm nginx-${NGINX_VERSION}.tar.gz
 
 # Get nginx-rtmp module.
-RUN wget https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_VERSION}.tar.gz && \
+RUN wget https://github.com/winshining/nginx-http-flv-module/archive/v${NGINX_RTMP_VERSION}.tar.gz && \
   tar zxf v${NGINX_RTMP_VERSION}.tar.gz && \
   rm v${NGINX_RTMP_VERSION}.tar.gz
 
@@ -45,7 +45,7 @@ WORKDIR /tmp/nginx-${NGINX_VERSION}
 RUN \
   ./configure \
   --prefix=/usr/local/nginx \
-  --add-module=/tmp/nginx-rtmp-module-${NGINX_RTMP_VERSION} \
+  --add-module=/tmp/nginx-http-flv-module-${NGINX_RTMP_VERSION} \
   --conf-path=/etc/nginx/nginx.conf \
   --with-threads \
   --with-file-aio \
